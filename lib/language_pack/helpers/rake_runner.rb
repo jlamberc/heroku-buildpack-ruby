@@ -51,9 +51,7 @@ class LanguagePack::Helpers::RakeRunner
 
   def initialize(has_rake_gem = true)
     @has_rake = has_rake_gem && has_rakefile?
-    if @has_rake
-      load_rake_tasks
-    else
+    if !@has_rake
       @rake_tasks    = ""
       @rakefile_can_load = false
     end
@@ -71,16 +69,16 @@ class LanguagePack::Helpers::RakeRunner
     LanguagePack::Instrument.instrument(*args, &block)
   end
 
-  def load_rake_tasks
+  def load_rake_tasks(env = {})
     instrument "ruby.rake_task_defined" do
-      @rake_tasks        ||= run("bundle exec rake -P --trace", user_env: true)
+      @rake_tasks        ||= run("bundle exec rake -P --trace", env: env)
       @rakefile_can_load ||= $?.success?
       @rake_tasks
     end
   end
 
-  def load_rake_tasks!
-    out =  load_rake_tasks
+  def load_rake_tasks!(env = {})
+    out =  load_rake_tasks(env)
     msg =  "Could not detect rake tasks\n"
     msg << "ensure you can run `$ bundle exec rake -P` against your app with no environment variables present\n"
     msg << "and using the production group of your Gemfile.\n"

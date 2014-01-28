@@ -622,7 +622,13 @@ params = CGI.parse(uri.query || "")
   def rake
     @rake ||= LanguagePack::Helpers::RakeRunner.new(
                 bundler.has_gem?("rake") || ruby_version.rake_is_vendored?
-              ).load_rake_tasks!
+              ).load_rake_tasks!({ "DATABASE_URL" => ENV["DATABASE_URL"] || default_database_url }.merge(user_env_hash))
+  end
+
+
+  # generate a dummy database_url
+  def default_database_url
+    nil
   end
 
   # executes the block with GIT_DIR environment variable removed since it can mess with the current working directory git thinks it's in
