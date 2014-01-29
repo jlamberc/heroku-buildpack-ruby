@@ -36,7 +36,7 @@ class LanguagePack::Helpers::RakeRunner
       options = @default_options.merge(options)
       puts "Running: rake #{task}"
       time = Benchmark.realtime do
-        self.output = pipe("rake #{task}", options)
+        self.output = pipe("rake #{task} --trace", options)
       end
       self.time = time
 
